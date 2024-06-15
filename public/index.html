@@ -3,24 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Scam Location</title>
+    <title>Geolocation Example</title>
     <link rel="stylesheet" href="Style.css">
+    <script defer src="script.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Report Scam Location</h1>
-        <p id="address">Fetching your location...</p>
-        <button id="changeAddressBtn">Change Address</button>
-        <form id="addressForm" style="display: none;">
-            <label for="country">Country:</label>
-            <input type="text" id="country" placeholder="Enter country">
-            <label for="state">State:</label>
-            <input type="text" id="state" placeholder="Enter state">
-            <label for="specificAddress">Specific Address:</label>
-            <textarea id="specificAddress" placeholder="Enter specific address"></textarea>
-            <button type="submit">Update Address</button>
-        </form>
-    </div>
-    <script src="script.js"></script>
+    <div id="address"></div>
+    <button id="changeAddressBtn">Change Address</button>
+    <form id="addressForm" style="display: none;">
+        <input type="text" id="country" placeholder="Country">
+        <input type="text" id="state" placeholder="State">
+        <input type="text" id="specificAddress" placeholder="Specific Address">
+        <button type="submit">Update Address</button>
+    </form>
 </body>
 </html>

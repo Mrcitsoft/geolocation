@@ -6,36 +6,48 @@ document.addEventListener("DOMContentLoaded", () => {
     const stateInput = document.getElementById('state');
     const specificAddressInput = document.getElementById('specificAddress');
 
+    const OPEN_CAGE_API_KEY = '9999a50e679941b3b51248db20de83ec';
+
     // Function to fetch location using Geolocation API
     function fetchLocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, showError);
+            navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
         } else {
             addressElement.textContent = "Geolocation is not supported by this browser.";
         }
     }
 
-    // Function to show position and get address using reverse geocoding
-    function showPosition(position) {
+    // Function to show position and get address using OpenCage Geocoding API
+    async function showPosition(position) {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
 
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-            .then(response => response.json())
-            .then(data => {
-                const addressParts = data.address;
-                const country = addressParts.country;
-                const state = addressParts.state;
+        try {
+            const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${OPEN_CAGE_API_KEY}`);
+            const data = await response.json();
+
+            if (data.results && data.results.length > 0) {
+                const components = data.results[0].components;
+                const country = components.country;
+                const state = components.state || components.province;
+                const specificAddress = data.results[0].formatted.replace(`, ${state}, ${country}`, '');
 
                 countryInput.value = country;
                 stateInput.value = state;
-                specificAddressInput.value = data.display_name.replace(`${state}, ${country}, `, '');
+                specificAddressInput.value = specificAddress;
 
-                addressElement.textContent = `${specificAddressInput.value}, ${state}, ${country}`;
-            })
-            .catch(error => {
-                console.error('Error fetching address:', error);
-            });
+                addressElement.textContent = `${specificAddress}, ${state}, ${country}`;
+            } else {
+                addressElement.textContent = "Unable to retrieve the address.";
+            }
+        } catch (error) {
+            console.error('Error fetching address:', error);
+            addressElement.textContent = "Unable to retrieve the address.";
+        }
     }
 
     // Function to handle errors
@@ -77,5 +89,4 @@ document.addEventListener("DOMContentLoaded", () => {
             changeAddressBtn.style.display = 'block';
         }
     });
-
 });
